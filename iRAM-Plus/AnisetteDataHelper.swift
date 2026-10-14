@@ -361,6 +361,13 @@ final class AnisetteDataHelper
     // MARK: - V3: FETCHING
     
     func fetchClientInfo() async throws {
+        // Anisette state made under the old client info is rejected; start over once.
+        if UserDefaults.standard.string(forKey: "anisetteClientInfoVersion") != "android-2026-10" {
+            Keychain.shared.adiPb = nil
+            Keychain.shared.identifier = nil
+            self.resetClientInfo()
+            UserDefaults.standard.set("android-2026-10", forKey: "anisetteClientInfoVersion")
+        }
         if  self.clientInfo != nil &&
                 self.userAgent != nil &&
                 self.mdLu != nil &&
@@ -397,10 +404,9 @@ final class AnisetteDataHelper
                 if let clientInfo = json["client_info"] {
                     self.printOut("Server is V3")
                     
-                    // Apple now rejects the Android-library fingerprint with the client info anisette servers report (error -80045).
-                    // Reporting the Android client info that goes with that library gets past it (SideStore/SideSign discussion, Oct 2026).
-                    self.clientInfo = "<Android; 14; UQ1A.240205.004><com.apple.AuthKit/1 (com.apple.android.music/4.9.6)>"
-                    self.userAgent = json["user_agent"]!
+                    // -80045 workaround: report the Android client info (same string iloader v2.3.7 / isideload 0.4.5 hardcodes) instead of the one the server reports.
+                    self.clientInfo = "<Pixel 7> <Android;14;UQ1A.240205.002> <com.apple.AuthKit/1 (com.apple.akd/1.0)>"
+                    self.userAgent = "akd/1.0 CFNetwork/808.1.4"
                     self.printOut("Client-Info: \(self.clientInfo!)")
                     self.printOut("User-Agent: \(self.userAgent!)")
                     
