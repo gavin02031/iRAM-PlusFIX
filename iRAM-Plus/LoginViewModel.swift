@@ -73,6 +73,7 @@ class LoginViewModel: ObservableObject {
         }
 
         AnisetteDataHelper.shared.loggingFunc = logging
+        Authentication.log = { text in logging(text: "[sign-in] " + text) }
 
         defer {
             // Only cleanup if we're not waiting for 2FA
