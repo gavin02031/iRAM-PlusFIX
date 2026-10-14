@@ -418,6 +418,24 @@ struct LoginSlide: View {
             .cornerRadius(15)
             .padding(.horizontal)
             
+            if !viewModel.loginViewModel.logs.isEmpty {
+                VStack(spacing: 6) {
+                    ScrollView {
+                        Text(viewModel.loginViewModel.logs)
+                            .font(.system(size: 10, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)
+                    }
+                    .frame(maxHeight: 160)
+                    
+                    Button("Copy log") {
+                        UIPasteboard.general.string = viewModel.loginViewModel.logs
+                    }
+                    .font(.caption)
+                }
+                .padding(.horizontal)
+            }
+            
             Text("All authentication is done on-device. Your credentials are never sent to third-party services.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
